@@ -1,8 +1,27 @@
-(async ()=>{
+(async () => {
     const fetchPlaylist = require("./js/fetchUserLib");
     const getPlaylist = require("./js/fetchPlaylistDetails");
-    let token = window.location.hash.substring(window.location.hash.indexOf("access_token=")).replace("access_token=", "");
-    token = token.substring(0, token.indexOf("&"));
+    let info = {
+        client: "bdea9cfc72e84b9190818f99ef5c4309",
+        host: window.location.href.substring(0, window.location.href.lastIndexOf("/"))
+    }
+    console.log(window.location.search);
+    const tokenReq = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+            client_id: info.client,
+            grant_type: "authorization_code",
+            code: new URLSearchParams(window.location.search).get("code"),
+            redirect_uri: `${info.host}/next.html`,
+            code_verifier: sessionStorage.getItem("Backupify-CodeVerifier")
+        })
+    });
+    token = (await tokenReq.json()).access_token;
+    if (!token) window.location.href = "./";
+    sessionStorage.removeItem("Backupify-CodeVerifier");
     history.pushState(null, "", "next.html");
     let result = await fetchPlaylist("https://api.spotify.com/v1/me/playlists?limit=50", token); // Get user playlists
     function parseResult(json, prepend) { // Create a table with each fetched playlist from the user library. 
@@ -39,11 +58,11 @@
         if ((localStorage.getItem("Backupify-PlaylistIDs") ?? "") !== "") { // If the previous selection was saved
             document.getElementById("saveSelection").checked = true; // Make the "Save selection" checkbox checked
             for (let item of JSON.parse(localStorage.getItem("Backupify-PlaylistIDs"))) {
-                 getPlaylist(token, item).then((getResult) => { // Don't wait timeout for each playlist here so that, if there's a missing playlist, it won't make the website slow
+                getPlaylist(token, item).then((getResult) => { // Don't wait timeout for each playlist here so that, if there's a missing playlist, it won't make the website slow
                     if (getResult) parseResult(getResult, true);  // If there isn't an error, add the new playlist on top.
-                 });      
+                });
             }
-    }
+        }
     }
     addOldSelection();
     let tableDiv = document.getElementById("fetchMore"); // The ID of the scrollable part of the table
@@ -65,7 +84,7 @@
             if ((document.querySelector(`[data-editid='${getId}']`) ?? "") !== "") continue; // If a table for this filter has been created previously, don't create it another time.
             let node = item.parentElement.parentElement.cloneNode(true); // Clone the table row that contained the old playlist
             node.firstChild.remove(); // Remove the checkbox
-            let inputContainer = document.createElement("td"); 
+            let inputContainer = document.createElement("td");
             let text = document.createElement("input"); // Create the textbox where the user can choose the name
             text.type = "text";
             text.setAttribute("data-editid", getId); // Set the playlist ID to the textbox
@@ -85,7 +104,7 @@
         opacityAdd(document.querySelector("[data-step=convert]"));
         const backup = require("./js/commonUsage"); // The JavaScript module that'll handle playlists
         let fileBackup = {}; // The object that'll contain the playlist ID (as a key) and the new playlist name (as a value)
-        for (let item of document.querySelectorAll("[data-editid]")) { 
+        for (let item of document.querySelectorAll("[data-editid]")) {
             if ((item.value ?? "") === "") item.value = item.getAttribute("data-editid");
             fileBackup[item.value] = item.getAttribute("data-editid");
         }
@@ -100,7 +119,7 @@
         if (val.indexOf("?") !== -1) val = val.substring(0, val.indexOf("?")); // Delete eventual search queries from the provided URL
         if (val.indexOf("/") !== -1) val = val.substring(val.lastIndexOf("/") + 1); // Delete the eventual Spotify webpage URL
         if (val.indexOf(":") !== -1) val = val.substring(val.lastIndexOf(":") + 1); // Delete the eventual part before the Playlist ID in the "spotify:playlist:id" scheme
-        return val.trim(); 
+        return val.trim();
     }
     document.getElementById("addCustom").addEventListener("click", async () => { // Backup a playlist by providing a custom ID in the "choose the playlists" section
         let getResult = await getPlaylist(token, parseUserSpotify(document.getElementById("customId").value)); // Get the playlist info

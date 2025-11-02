@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
     <link rel="stylesheet" href="./style.css">
     <title>Backupify | Create a copy of your Spotify playlists</title>
@@ -6,24 +7,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
+
 <body>
     <h1>Backupify</h1>
     <i>Easily create a copy of your Spotify playlists</i><br><br>
     <div class="centerContainer" style="height: 100%;">
         <div class="center" style="height: 100%;">
             <h2>Let's start!</h2>
-    <button id="spotiConnect">Connect to Spotify API</button><br><br>
-    <i>Everything will be done on your device, and connections will be made only to Spotify servers to create the new playlist</i>
+            <button id="spotiConnect">Connect to Spotify API</button><br><br>
+            <i>Everything will be done on your device, and connections will be made only to Spotify servers to create
+                the new playlist</i>
         </div>
     </div>
     <script src="./commonWeb.js"></script>
     <script>
-        document.getElementById("spotiConnect").addEventListener("click", () => {
+        document.getElementById("spotiConnect").addEventListener("click", async () => {
+                const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                const codeVerifier = crypto.getRandomValues(new Uint8Array(64)).reduce((acc, x) => acc + possible[x % possible.length], "");
+            const challenge = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier))))).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+            sessionStorage.setItem("Backupify-CodeVerifier", codeVerifier);
             let info = {
                 client: "bdea9cfc72e84b9190818f99ef5c4309",
-                host: "https://dinoosauro.github.io" ? "https://dinoosauro.github.io/Backupify" : window.location.origin,
+                host: window.location.href.substring(0, window.location.href.lastIndexOf("/"))
             }
-            window.location.href = `https://accounts.spotify.com/authorize?client_id=${info.client}&response_type=token&redirect_uri=${encodeURIComponent(`${info.host}/next.html`)}&scope=playlist-read-private%20playlist-modify-private`;
+            window.location.href = `https://accounts.spotify.com/authorize?client_id=${info.client}&response_type=code&redirect_uri=${encodeURIComponent(`${info.host}/next.html`)}&scope=playlist-read-private%20playlist-modify-private&code_challenge_method=S256&code_challenge=${challenge}`;
         })
     </script>
 </body>

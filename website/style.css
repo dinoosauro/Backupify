@@ -27,10 +27,6 @@ table > tbody >tr {
     background-color: var(--secondcontent);
     border-radius: 8px;
 }
-table > tbody > tr > td > input[type="checkbox"] {
-    width: -webkit-fill-available;
-    width: -moz-fill-available;
-}
 table > tbody > tr > td > img {
     max-width: 85px;
     max-height: 85px;
@@ -84,17 +80,41 @@ button {
 input[type="text"] {
     background-color: var(--secondcontent);
 }
-button:hover, input:hover {
+button:hover, input:not([type=checkbox]):hover {
     filter: brightness(var(--hover));
     cursor: pointer;
 }
-button:active, input:hover {
+input[type=checkbox]:hover {
+    cursor: pointer;
+}
+button:active, input:not([type=checkbox]):hover {
     filter: brightness(var(--active))
 }
 input[type="checkbox"] {
-    width: 18px;
+    width: 60px;
     height: 18px;
-    accent-color: var(--accent);
+    background-color: var(--firstcontent);
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.2s ease-in-out;
+    appearance: none;
+}
+input[type=checkbox]::before {
+    background-color: var(--text);
+    width: 12px;
+    height: 12px;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s ease-in-out;
+    border-radius: 50%;
+    content: "";
+    position: absolute;
+}
+input[type=checkbox]:checked::before {
+    left: 45px;
+}
+input[type=checkbox]:checked {
+    background-color: var(--accent);
 }
 .tableContainer {
     display: flex;justify-content: center;overflow: scroll;max-height: 50vh;
