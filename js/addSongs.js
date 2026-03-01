@@ -6,7 +6,7 @@ module.exports = async (token, playlist, songs) => {
             returnVal = false;
             return false;
         }
-        let addReq = await fetch(`https://api.spotify.com/v1/playlists/${playlist}/tracks`, {
+        let addReq = await fetch(`https://api.spotify.com/v1/playlists/${playlist}/items`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",

@@ -5,7 +5,6 @@
         client: "bdea9cfc72e84b9190818f99ef5c4309",
         host: window.location.href.substring(0, window.location.href.lastIndexOf("/"))
     }
-    console.log(window.location.search);
     const tokenReq = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {

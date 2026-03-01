@@ -22,8 +22,8 @@
     <script src="./commonWeb.js"></script>
     <script>
         document.getElementById("spotiConnect").addEventListener("click", async () => {
-                const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                const codeVerifier = crypto.getRandomValues(new Uint8Array(64)).reduce((acc, x) => acc + possible[x % possible.length], "");
+            const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const codeVerifier = crypto.getRandomValues(new Uint8Array(64)).reduce((acc, x) => acc + possible[x % possible.length], "");
             const challenge = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier))))).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
             sessionStorage.setItem("Backupify-CodeVerifier", codeVerifier);
             let info = {

@@ -13,7 +13,7 @@ module.exports = async (token, playlist) => {
         });
         let json = await songs.json();
         if (songs.status.toString().startsWith("2")) {
-            trackArray.push(...json.items.map(e => {return e.track.uri})); // Add to the items only the track URI
+            trackArray.push(...json.items.map(e => {return e.item.uri})); // Add to the items only the track URI
             return ((json.next ?? "") !== "") ? await nextLoad(json.next, true) : trackArray; // If there is a "next" field, fetch it. Otherwise, return the new track array.
         } else {
             errorCount++;
@@ -28,5 +28,5 @@ module.exports = async (token, playlist) => {
             }, smallWait ? 50 : 4000);
         })
     }
-    return await fetchResult(`https://api.spotify.com/v1/playlists/${playlist}/tracks?limit=50`);
+    return await fetchResult(`https://api.spotify.com/v1/playlists/${playlist}/items?limit=50`);
 }

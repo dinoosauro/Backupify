@@ -1,10 +1,10 @@
 // Send a POST request to the Spotify API to create a new playlist
-module.exports = async (playlist, token, user) => {
+module.exports = async (playlist, token) => {
     let tryCount = 0;
     async function createPlaylist() {
         tryCount++;
         if (tryCount > 5) return false;
-        let createPlaylist = await fetch(`https://api.spotify.com/v1/users/${user}/playlists`, {
+        let createPlaylist = await fetch(`https://api.spotify.com/v1/me/playlists`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",

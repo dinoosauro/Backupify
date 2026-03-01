@@ -8,7 +8,7 @@ if (fs.existsSync("dist")) fs.rmSync("dist", {recursive: true});
 function checkDist(e) {
     if (!fs.existsSync(`dist/${e.substring(0, e.lastIndexOf("/"))}`)) fs.mkdirSync(`dist/${e.substring(0, e.lastIndexOf("/"))}`, {recursive: true});
 }
-let JSPath = ["js/addSongs.js", "js/commonUsage.js", "js/createPlaylists.js", "js/fetchPlaylist.js", "js/fetchPlaylistDetails.js", "js/fetchUserLib.js", "js/getUserId.js", "website/commonWeb.js", "web.js"];
+let JSPath = ["js/addSongs.js", "js/commonUsage.js", "js/createPlaylists.js", "js/fetchPlaylist.js", "js/fetchPlaylistDetails.js", "js/fetchUserLib.js", "website/commonWeb.js", "web.js"];
 JSPath.forEach(e => {
     checkDist(e);
     fs.writeFileSync(`dist/${e}`, uglify.minify(fs.readFileSync(e, "utf-8"), {mangle: {toplevel: e !== "website/commonWeb.js"}}).code);
